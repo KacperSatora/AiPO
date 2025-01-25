@@ -1,35 +1,47 @@
-class PrinterScanner extends MultiFunctionDevice implements Printer, Scanner, NetworkDevice {
+class MultiFunctionPrinter extends MultiFunctionDevice implements NetworkDevice {
     private final int paperTrayCapacity;
     private final int inkCapacity;
     private int currentPaperCount;
     private int currentInkAmount;
     private boolean isConnectedToNetwork;
 
-    public PrinterScanner(String brand, String model, int paperTrayCapacity, int inkCapacity) {
-        super(brand, model);
+
+    public MultiFunctionPrinter(String brand, String model, String scannerType, String printerType, int paperTrayCapacity, int inkCapacity) {
+        super(brand, model, scannerType, printerType);
         this.paperTrayCapacity = paperTrayCapacity;
-        this.currentPaperCount = 0;
         this.inkCapacity = inkCapacity;
+
+        this.currentPaperCount = 0;
+        this.currentInkAmount = 0;
+
         this.isConnectedToNetwork = false;
+        super.setScannerType("Color");
+        super.setPrinterType("EcoTank");
     }
 
     @Override
     public void powerOn() {
+        super.powerOn();
         System.out.println(getBrand() + " " + getModel() + " is now powered on.");
     }
 
     @Override
     public void powerOff() {
+        super.powerOff();
         System.out.println(getBrand() + " " + getModel() + " is now powered off.");
     }
 
     @Override
     public void print(String document) {
-        if (currentPaperCount > 0) {
-            System.out.println("Printing document: " + document);
-            currentPaperCount--;
+        if (super.print()) {
+            if (currentPaperCount > 0) {
+                System.out.println("Printing document: " + document);
+                currentPaperCount--;
+            } else {
+                System.out.println("Cannot print. Paper tray is empty.");
+            }
         } else {
-            System.out.println("Cannot print. Paper tray is empty.");
+            System.out.println("Cannot print. Printer is out of power.");
         }
     }
 
@@ -55,7 +67,11 @@ class PrinterScanner extends MultiFunctionDevice implements Printer, Scanner, Ne
 
     @Override
     public void scan(String documentName, String format) {
-        System.out.println("Scanning document: " + documentName + " as " + format + " file.");
+        if (super.scan()) {
+            System.out.println("Scanning document: " + documentName + " as " + format + " file.");
+        } else {
+            System.out.println("Cannot scan, printer is out of power");
+        }
     }
 
     @Override
